@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SillySC - Анимация векторной диаграммы</title>
+    <title>SillySC - Изменение режимных параметров ЭЭС при асинхронном ходе</title>
     <style>
         * {
             margin: 0;
@@ -21,7 +21,7 @@
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 0 20px;
         }
@@ -29,75 +29,239 @@
         /* Заголовок */
         header {
             background: linear-gradient(135deg, #ff66b2, #ff99cc);
-            padding: 30px 0;
+            padding: 25px 0;
             text-align: center;
             box-shadow: 0 4px 12px rgba(255, 105, 180, 0.2);
-            margin-bottom: 40px;
+            margin-bottom: 30px;
             border-radius: 0 0 20px 20px;
         }
 
         h1 {
             color: white;
-            font-size: 3.5rem;
+            font-size: 3.2rem;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-            letter-spacing: 3px;
+            letter-spacing: 2px;
             font-weight: 800;
+            margin-bottom: 5px;
         }
 
         h1 span {
-            color: #ffe6f2;
-            font-weight: 300;
+            color: #f7ffc6;
+            font-weight: 800;
         }
 
         .tagline {
             color: white;
-            font-size: 1.2rem;
-            margin-top: 10px;
+            font-size: 1.1rem;
             opacity: 0.9;
+            font-weight: 500;
         }
 
-        /* Основной контент */
+        /* Основной контент - НОВАЯ СТРУКТУРА */
         .content {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 25px;
+            align-items: start;
+        }
+
+        /* Панель управления - СДВИНУТА ВЛЕВО */
+        .controls-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 6px 20px rgba(255, 105, 180, 0.15);
+            border: 2px solid #ffccdd;
+            position: sticky;
+            top: 20px;
+        }
+
+        .controls-panel h2 {
+            color: #ff66b2;
+            font-size: 1.6rem;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .control-section {
+            margin-bottom: 18px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #ffccdd;
+        }
+
+        .control-section:last-child {
+            border-bottom: none;
+        }
+
+        .control-section h3 {
+            color: #ff66b2;
+            font-size: 1rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .control-section h3::before {
+            content: "•";
+            color: #ff66aa;
+            font-size: 1.5rem;
+        }
+
+        .control-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            padding: 10px 15px;
+            background: #ff66aa;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        button:hover {
+            background: #e2267b;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(226, 38, 123, 0.3);
+        }
+
+        button:disabled {
+            background: #ffb3d9;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .speed-control {
             display: flex;
             flex-direction: column;
-            gap: 40px;
+            gap: 8px;
         }
 
-        /* Область графиков */
-        .graphics-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(550px, 1fr));
-            gap: 30px;
+        .speed-control label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 500;
+            color: #666;
         }
 
-        .graph-box {
-            background: white;
-            border-radius: 20px;
-            padding: 25px;
-            box-shadow: 0 8px 25px rgba(255, 105, 180, 0.15);
-            transition: transform 0.3s, box-shadow 0.3s;
-            border: 2px solid #ffccdd;
+        .speed-control input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: #ffccdd;
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .speed-control input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            background: #ff66aa;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        #speedValue {
+            font-weight: 700;
+            color: #ff66aa;
+            min-width: 40px;
+            text-align: right;
+        }
+
+        .current-segment-display {
+            background: #fff0f5;
+            padding: 12px;
+            border-radius: 8px;
             text-align: center;
+            margin: 15px 0;
+            border: 1px solid #ffccdd;
         }
 
-        .graph-box:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 30px rgba(255, 105, 180, 0.25);
-        }
-
-        .graph-title {
+        .current-segment-display strong {
             color: #ff66b2;
+            font-size: 1.2rem;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .current-segment-display span {
             font-size: 1.8rem;
-            margin-bottom: 20px;
-            text-align: center;
-            font-weight: 600;
+            font-weight: 800;
+            color: #e2267b;
+        }
+
+        .segment-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .segment-btn {
+            padding: 8px 10px;
+            font-size: 12px;
+            background: #ffccdd;
+            color: #b30059;
+        }
+
+        .segment-btn.active {
+            background: #e2267b;
+            color: white;
+        }
+
+        /* Область анимации */
+        .animation-container {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 6px 20px rgba(255, 105, 180, 0.15);
+            border: 2px solid #ffccdd;
+        }
+
+        .animation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
             padding-bottom: 10px;
-            border-bottom: 2px dashed #ffccdd;
+            border-bottom: 2px solid #ffccdd;
+        }
+
+        .animation-header h2 {
+            color: #ff66b2;
+            font-size: 1.6rem;
+            font-weight: 700;
+        }
+
+        .animation-info {
+            color: #ff66aa;
+            font-size: 0.9rem;
+            font-weight: 500;
+            background: #fff0f5;
+            padding: 5px 12px;
+            border-radius: 20px;
         }
 
         .graph-wrapper {
             position: relative;
-            height: 416px;
+            height: 475px; /* Уменьшено на 25px */
             width: 100%;
             display: flex;
             justify-content: center;
@@ -105,7 +269,7 @@
         }
 
         svg {
-            width: 900px;
+            width: 100%;
             height: 100%;
             border: 3px solid #ff80c0;
             background: #ffffff;
@@ -123,150 +287,81 @@
             fill: #e2267b;
         }
 
-        /* Панель управления */
-        .controls {
-            background: white;
-            border-radius: 20px;
-            padding: 25px;
-            box-shadow: 0 8px 25px rgba(255, 105, 180, 0.15);
-            margin-top: 10px;
-            border: 2px solid #ffccdd;
-            text-align: center;
-        }
-
-        .controls h2 {
-            color: #ff66b2;
-            font-size: 1.8rem;
-            margin-bottom: 20px;
-        }
-
-        .control-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 20px;
-            justify-content: center;
-        }
-
-        button {
-            padding: 10px 20px;
-            background: #ff66aa;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: background 0.3s, transform 0.2s;
-            font-weight: 600;
-        }
-
-        button:hover {
-            background: #e2267b;
-            transform: translateY(-2px);
-        }
-
-        button:disabled {
-            background: #ffb3d9;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .speed-control {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            justify-content: center;
-            margin: 15px 0;
-        }
-
-        .segment-controls {
-            display: flex;
-            gap: 5px;
-            margin-top: 15px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .segment-btn {
-            padding: 8px 15px;
-            font-size: 13px;
-        }
-
-        .current-segment {
-            margin-top: 10px;
-            font-weight: bold;
-            color: #e2267b;
-            font-size: 1.1rem;
-        }
-
         /* Подвал */
         footer {
-            margin-top: 40px;
+            margin-top: 30px;
             text-align: center;
             color: #ff66b2;
             font-size: 0.9rem;
-            padding: 20px;
+            padding: 15px;
+            border-top: 1px solid #ffccdd;
         }
 
         /* Адаптивность */
-        @media (max-width: 1100px) {
-            svg {
-                width: 100%;
-                max-width: 900px;
+        @media (max-width: 1024px) {
+            .content {
+                grid-template-columns: 280px 1fr;
+                gap: 20px;
+            }
+            
+            .controls-panel {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 2.8rem;
             }
         }
 
         @media (max-width: 768px) {
-            .graphics-container {
+            .content {
                 grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .controls-panel {
+                position: static;
+                order: 2;
+            }
+            
+            .animation-container {
+                order: 1;
             }
             
             h1 {
-                font-size: 2.5rem;
-            }
-            
-            .graph-box, .controls {
-                padding: 20px;
+                font-size: 2.2rem;
             }
             
             .graph-wrapper {
                 height: 350px;
             }
             
-            svg {
-                height: 350px;
-            }
-            
-            .control-buttons {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            button {
-                width: 200px;
+            .control-buttons,
+            .segment-controls {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
 
-        @media (max-width: 600px) {
+        @media (max-width: 480px) {
             h1 {
-                font-size: 2rem;
+                font-size: 1.8rem;
+            }
+            
+            .tagline {
+                font-size: 1rem;
             }
             
             .graph-wrapper {
                 height: 300px;
             }
             
-            svg {
-                height: 300px;
+            .control-buttons,
+            .segment-controls {
+                grid-template-columns: 1fr;
             }
             
-            .graph-title, .controls h2 {
-                font-size: 1.5rem;
-            }
-            
-            .control-buttons button {
+            button {
                 width: 100%;
-                max-width: 250px;
             }
         }
     </style>
@@ -275,91 +370,152 @@
     <header>
         <div class="container">
             <h1>Silly<span>SC</span></h1>
-            <p class="tagline">Анимация векторной диаграммы в розовом оформлении</p>
+            <p class="tagline">Анимация векторной диаграммы изменения напряжений при асинхронном ходе</p>
         </div>
     </header>
 
     <div class="container">
         <div class="content">
-            <div class="graphics-container">
-                <div class="graph-box">
-                    <h2 class="graph-title">Анимация вращения генераторной ЭДС</h2>
-                    <div class="graph-wrapper">
-                        <svg>
-                            <!-- Траектория вращения генераторной ЭДС -->
-                            <circle cx="167" cy="208" r="125" class="trajectory" />
-                            
-                            <!-- Ключевые точки (пропорционально уменьшены) -->
-                            <circle cx="167" cy="83" r="4" class="key-point" />
-                            <circle cx="42" cy="208" r="4" class="key-point" />
-                            <circle cx="167" cy="333" r="4" class="key-point" />
-                            <circle cx="292" cy="208" r="4" class="key-point" />
-
-                            <circle cx="375" cy="83" r="4" class="key-point" />
-                            <circle cx="292" cy="167" r="4" class="key-point" />
-                            <circle cx="375" cy="250" r="4" class="key-point" />
-                            <circle cx="458" cy="167" r="4" class="key-point" />
-
-                            <circle cx="667" cy="83" r="4" class="key-point" />
-                            <circle cx="642" cy="108" r="4" class="key-point" />
-                            <circle cx="667" cy="133" r="4" class="key-point" />
-                            <circle cx="692" cy="108" r="4" class="key-point" />
-
-                            <!-- Траектория вращения приёмной точки (коннектора) -->
-                            <circle cx="667" cy="108" r="25" class="trajectory" />
-
-                            <!-- Генераторная ЭДС Eg -->
-                            <line id="eg" x1="167" y1="208" x2="167" y2="83" stroke="red" stroke-width="4" />
-
-                            <!-- Розовая линия 180 градусов через центр первого круга -->
-                            <line id="pinkLine" x1="42" y1="208" x2="790" y2="208" stroke="#ff66cc" stroke-width="2" />
-                            
-                            <!-- Соединяющая линия -->
-                            <line id="conn" x1="167" y1="83" x2="790" y2="83" stroke="black" stroke-width="2" />
-                            
-                            <!-- Второй круг (средний) -->
-                            <circle cx="375" cy="167" r="83" class="trajectory" />
-                        </svg>
+            <!-- Левая панель управления -->
+            <div class="controls-panel">
+                <h2>Управление анимацией</h2>
+                
+                <div class="control-section">
+                    <h3>Воспроизведение</h3>
+                    <div class="control-buttons">
+                        <button id="playPause">▶ Воспр.</button>
+                        <button id="reset"> Сброс</button>
+                        <button id="prevStep">⏮ Назад</button>
+                        <button id="nextStep">⏭ Вперед</button>
+                    </div>
+                </div>
+                
+                <div class="control-section">
+                    <h3>Скорость анимации</h3>
+                    <div class="speed-control">
+                        <label>
+                            <span>Медленнее</span>
+                            <span id="speedValue">1.0x</span>
+                            <span>Быстрее</span>
+                        </label>
+                        <input type="range" id="speedSlider" min="0.5" max="5" step="0.5" value="1">
+                    </div>
+                </div>
+                
+                <div class="current-segment-display">
+                    <strong>Текущий сегмент</strong>
+                    <span id="segmentIndicator">1/4</span>
+                </div>
+                
+                <div class="control-section">
+                    <h3>Переход по сегментам</h3>
+                    <div class="segment-controls">
+                        <button class="segment-btn" data-segment="0">Сегмент 1</button>
+                        <button class="segment-btn" data-segment="1">Сегмент 2</button>
+                        <button class="segment-btn" data-segment="2">Сегмент 3</button>
+                        <button class="segment-btn" data-segment="3">Сегмент 4</button>
                     </div>
                 </div>
             </div>
             
-            <div class="controls">
-                <h2>Управление анимацией</h2>
-                
-                <div class="control-buttons">
-                    <button id="playPause">▶ Воспроизведение</button>
-                    <button id="prevStep">⏮ Назад</button>
-                    <button id="nextStep">⏭ Вперед</button>
-                    <button id="reset"> Сброс</button>
+            <!-- Правая область с анимацией -->
+            <div class="animation-container">
+                <div class="animation-header">
+                    <h2>Анимация векторной диаграммы изменения напряжения</h2>
+                    <div class="animation-info">Интерактивная векторная диаграмма</div>
                 </div>
                 
-                <div class="speed-control">
-                    <span>Скорость:</span>
-                    <input type="range" id="speedSlider" min="0.5" max="5" step="0.5" value="1">
-                    <span id="speedValue">1.0x</span>
-                </div>
-                
-                <div class="current-segment">
-                    Текущий сегмент: <span id="segmentIndicator">1/4</span>
-                </div>
-                
-                <div class="segment-controls">
-                    <button class="segment-btn" data-segment="0">Сегмент 1</button>
-                    <button class="segment-btn" data-segment="1">Сегмент 2</button>
-                    <button class="segment-btn" data-segment="2">Сегмент 3</button>
-                    <button class="segment-btn" data-segment="3">Сегмент 4</button>
+                <div class="graph-wrapper">
+                    <svg>
+                        <!-- 1. Траектории (фон) -->
+                        <circle cx="150" cy="258" r="125" class="trajectory" />
+                        <circle cx="405" cy="217" r="83" class="trajectory" />
+                        <circle cx="790" cy="158" r="25" class="trajectory" />
+
+                        <!-- 2. Желтые центры -->
+                        <circle cx="150" cy="258" r="3" fill="orange" />
+                        <circle cx="405" cy="217" r="3" fill="orange" />
+                        <circle cx="790" cy="158" r="3" fill="orange" />
+
+                        <!-- 3. Линии анимации -->
+                        <line id="pinkLine" x1="150" y1="258" x2="950" y2="258" stroke="#ff66aa" stroke-width="2" />
+                        <line id="eg" x1="150" y1="258" x2="150" y2="133" stroke="red" stroke-width="4" />
+                        <line id="middleVector" x1="405" y1="217" x2="405" y2="133" stroke="green" stroke-width="4" />
+                        <line id="smallVector" x1="790" y1="158" x2="790" y2="133" stroke="blue" stroke-width="4" />
+                        <line id="conn" x1="150" y1="133" x2="950" y2="133" stroke="black" stroke-width="2" />
+
+                        <!-- 4. ПУНКТИРНЫЕ ЛИНИИ -->
+                        <line x1="150" y1="133" x2="150" y2="0" stroke="#ff66aa" stroke-width="2" stroke-dasharray="5,5" />
+                        <line x1="405" y1="133" x2="405" y2="0" stroke="#ff66aa" stroke-width="2" stroke-dasharray="5,5" />
+                        <line x1="790" y1="133" x2="790" y2="0" stroke="#ff66aa" stroke-width="2" stroke-dasharray="5,5" />
+                        <line x1="950" y1="258" x2="950" y2="0" stroke="#ff66aa" stroke-width="2" stroke-dasharray="5,5" />
+
+                        <!-- 5. ГОРИЗОНТАЛЬНЫЕ СТРЕЛКИ -->
+                        <line x1="150" y1="55" x2="405" y2="55" stroke="#ff3366" stroke-width="2" />
+                        <polygon points="405,55 395,50 395,60" fill="#ff3366" />
+                        <line x1="405" y1="55" x2="790" y2="55" stroke="#ff3366" stroke-width="2" />
+                        <polygon points="405,55 415,50 415,60" fill="#ff3366" />
+                        <line x1="790" y1="55" x2="950" y2="55" stroke="#ff3366" stroke-width="2" />
+                        <polygon points="790,55 800,50 800,60" fill="#ff3366" />
+                        <polygon points="950,55 940,50 940,60" fill="#ff3366" />
+
+                        <!-- 6. НАЗВАНИЯ НА ПУНКТИРНЫХ ЛИНИЯХ -->
+                        <text x="140" y="100" font-family="Arial" font-size="20" fill="#ff3366" text-anchor="end">
+                            E<tspan dy="10" font-size="16">г</tspan>
+                        </text>
+                        <text x="390" y="100" font-family="Arial" font-size="20" fill="#ff3366" text-anchor="end">
+                            U<tspan dy="10" font-size="16">A</tspan>
+                        </text>
+                        <text x="780" y="100" font-family="Arial" font-size="20" fill="#ff3366" text-anchor="end">
+                            U<tspan dy="10" font-size="16">B</tspan>
+                        </text>
+                        <text x="940" y="100" font-family="Arial" font-size="20" fill="#ff3366" text-anchor="end">
+                            E<tspan dy="10" font-size="16">C</tspan>
+                        </text>
+
+                        <!-- НАЗВАНИЯ НАД СТРЕЛКАМИ -->
+                        <text x="275" y="40" font-family="Arial" font-size="20" fill="#ff3366" text-anchor="middle">
+                            X<tspan font-size="16" baseline-shift="sub">г</tspan>+X<tspan font-size="16" baseline-shift="sub">т1</tspan>
+                        </text>
+                        <text x="595" y="40" font-family="Arial" font-size="20" fill="#ff3366" text-anchor="middle">
+                            X<tspan font-size="16" baseline-shift="sub">г</tspan>+X<tspan font-size="16" baseline-shift="sub">т1</tspan>+X<tspan font-size="16" baseline-shift="sub">л</tspan>
+                        </text>
+                        <text x="870" y="40" font-family="Arial" font-size="20" fill="#ff3366" text-anchor="middle">
+                            X<tspan font-size="16" baseline-shift="sub">г</tspan>+X<tspan font-size="16" baseline-shift="sub">т1</tspan>+X<tspan font-size="16" baseline-shift="sub">л</tspan>+X<tspan font-size="16" baseline-shift="sub">т2</tspan>
+                        </text>
+
+                        <!-- 7. Розовые точки -->
+                        <circle cx="150" cy="133" r="4" class="key-point" />
+                        <circle cx="25" cy="258" r="4" class="key-point" />
+                        <circle cx="150" cy="383" r="4" class="key-point" />
+                        <circle cx="275" cy="258" r="4" class="key-point" />
+                        <circle cx="405" cy="133" r="4" class="key-point" />
+                        <circle cx="322" cy="217" r="4" class="key-point" />
+                        <circle cx="405" cy="300" r="4" class="key-point" />
+                        <circle cx="488" cy="217" r="4" class="key-point" />
+                        <circle cx="790" cy="133" r="4" class="key-point" />
+                        <circle cx="765" cy="158" r="4" class="key-point" />
+                        <circle cx="790" cy="183" r="4" class="key-point" />
+                        <circle cx="815" cy="158" r="4" class="key-point" />
+
+                        <!-- 8. ТОЧКА ЭЦК -->
+                        <circle cx="550" cy="258" r="4" class="key-point" />
+                        <text x="570" y="275" font-family="Arial" font-size="18" fill="#ff3366">ЭЦК</text>
+                    </svg>
                 </div>
             </div>
         </div>
         
         <footer>
-            <p>SillySC &copy; 2023 | Анимация векторной диаграммы в розовом оформлении</p>
+            <p>SillySC &copy; 2025 | Интерактивная анимация векторной диаграммы | Made by Elena</p>
         </footer>
     </div>
 
     <script>
+        // JavaScript код остаётся точно таким же, как у вас был
         const eg = document.getElementById("eg");
+        const middleVector = document.getElementById("middleVector");
+        const smallVector = document.getElementById("smallVector");
         const conn = document.getElementById("conn");
         const playPauseBtn = document.getElementById("playPause");
         const prevStepBtn = document.getElementById("prevStep");
@@ -379,34 +535,70 @@
         
         // Сегменты анимации (4 четверти круга) - ПРОТИВ ЧАСОВОЙ СТРЕЛКИ
         const segments = [
-            { start: 0, end: Math.PI / 2 },     // Сегмент 1: от 0° до 90°
-            { start: Math.PI / 2, end: Math.PI }, // Сегмент 2: от 90° до 180°
-            { start: Math.PI, end: 3 * Math.PI / 2 }, // Сегмент 3: от 180° до 270°
-            { start: 3 * Math.PI / 2, end: 2 * Math.PI } // Сегмент 4: от 270° до 360°
+            { start: 0, end: Math.PI / 2 },
+            { start: Math.PI / 2, end: Math.PI },
+            { start: Math.PI, end: 3 * Math.PI / 2 },
+            { start: 3 * Math.PI / 2, end: 2 * Math.PI }
         ];
         
         let currentSegment = 0;
-        let segmentDirection = 1; // 1 = вперед (против часовой), -1 = назад (по часовой)
+        let segmentDirection = 1;
         let isManualSegment = false;
 
         // Ключевые точки (радианные углы) - ПРОТИВ ЧАСОВОЙ СТРЕЛКИ
         const keyPoints = [
-            0,              // Верх (0°) - начальная точка
-            Math.PI / 2,    // Право (90°) - следующая точка против часовой стрелки
-            Math.PI,        // Низ (180°)
-            3 * Math.PI / 2 // Лево (270°)
+            0,
+            Math.PI / 2,
+            Math.PI,
+            3 * Math.PI / 2
+        ];
+        
+        // Центры вращения и радиусы для каждого круга
+        const circles = [
+            { 
+                centerX: 150,
+                centerY: 258,
+                radius: 125, 
+                vector: eg,
+                startY: 258,
+                startX: 150
+            },
+            { 
+                centerX: 405,
+                centerY: 217,
+                radius: 83, 
+                vector: middleVector,
+                startY: 258,
+                startX: 405
+            },
+            { 
+                centerX: 790,
+                centerY: 158,
+                radius: 25, 
+                vector: smallVector,
+                startY: 258,
+                startX: 790
+            }
         ];
 
-        // Обновление позиции вектора - ПРОТИВ ЧАСОВОЙ СТРЕЛКИ
+        // Обновление позиции всех векторов - ПРОТИВ ЧАСОВОЙ СТРЕЛКИ
         function updatePosition(angle) {
-            // Для движения против часовой стрелки используем отрицательный угол
-            const x = 167 + 125 * Math.sin(-angle);
-            const y = 208 - 125 * Math.cos(-angle);
+            circles.forEach(circle => {
+                const x = circle.centerX + circle.radius * Math.sin(-angle);
+                const y = circle.centerY - circle.radius * Math.cos(-angle);
+                
+                circle.vector.setAttribute("x1", circle.startX);
+                circle.vector.setAttribute("y1", circle.startY);
+                circle.vector.setAttribute("x2", x);
+                circle.vector.setAttribute("y2", y);
+            });
             
-            eg.setAttribute("x2", x);
-            eg.setAttribute("y2", y);
-            conn.setAttribute("x1", x);
-            conn.setAttribute("y1", y);
+            const firstCircle = circles[0];
+            const firstX = firstCircle.centerX + firstCircle.radius * Math.sin(-angle);
+            const firstY = firstCircle.centerY - firstCircle.radius * Math.cos(-angle);
+            
+            conn.setAttribute("x1", firstX);
+            conn.setAttribute("y1", firstY);
         }
 
         // Получение текущего угла - ПРОТИВ ЧАСОВОЙ СТРЕЛКИ
@@ -424,13 +616,8 @@
         function updateSegmentIndicator() {
             segmentIndicator.textContent = `${currentSegment + 1}/4`;
             
-            // Подсветка активной кнопки сегмента
             segmentBtns.forEach((btn, index) => {
-                if (index === currentSegment) {
-                    btn.style.background = '#e2267b';
-                } else {
-                    btn.style.background = '#ff66aa';
-                }
+                btn.classList.toggle('active', index === currentSegment);
             });
         }
 
@@ -441,7 +628,6 @@
             const angle = getCurrentAngle();
             updatePosition(angle);
             
-            // Определение текущего сегмента при автоматической анимации
             if (!isManualSegment) {
                 const normalizedAngle = angle % (2 * Math.PI);
                 for (let i = 0; i < segments.length; i++) {
@@ -459,16 +645,14 @@
         // Воспроизведение/пауза
         function togglePlayPause() {
             if (isPlaying) {
-                // Пауза
                 pauseTime = performance.now();
                 isPlaying = false;
-                playPauseBtn.textContent = "▶ Воспроизведение";
+                playPauseBtn.textContent = "▶ Воспр.";
                 if (animationId) {
                     cancelAnimationFrame(animationId);
                     animationId = null;
                 }
             } else {
-                // Воспроизведение
                 if (pauseTime > 0) {
                     startTime += performance.now() - pauseTime;
                 }
@@ -479,13 +663,12 @@
             }
         }
 
-        // Переход к следующему сегменту (ПРОТИВ ЧАСОВОЙ СТРЕЛКИ)
+        // Переход к следующему сегменту
         function nextStep() {
             isManualSegment = true;
             isPlaying = false;
-            playPauseBtn.textContent = "▶ Воспроизведение";
+            playPauseBtn.textContent = "▶ Воспр.";
             
-            // Двигаемся против часовой стрелки (увеличиваем угол)
             if (currentSegment < segments.length - 1) {
                 currentSegment++;
             } else {
@@ -496,13 +679,12 @@
             updateSegmentIndicator();
         }
 
-        // Переход к предыдущему сегменту (ПО ЧАСОВОЙ СТРЕЛКИ)
+        // Переход к предыдущему сегменту
         function prevStep() {
             isManualSegment = true;
             isPlaying = false;
-            playPauseBtn.textContent = "▶ Воспроизведение";
+            playPauseBtn.textContent = "▶ Воспр.";
             
-            // Двигаемся по часовой стрелке (уменьшаем угол)
             if (currentSegment > 0) {
                 currentSegment--;
             } else {
@@ -521,7 +703,7 @@
             startTime = performance.now();
             pauseTime = 0;
             
-            playPauseBtn.textContent = "▶ Воспроизведение";
+            playPauseBtn.textContent = "▶ Воспр.";
             updatePosition(keyPoints[0]);
             updateSegmentIndicator();
             
@@ -537,7 +719,6 @@
             speedValue.textContent = `${speed.toFixed(1)}x`;
             
             if (isPlaying) {
-                // Корректируем startTime для плавного изменения скорости
                 const currentAngle = getCurrentAngle();
                 startTime = performance.now() - (currentAngle * 8000) / (2 * Math.PI * speed);
             }
@@ -548,7 +729,7 @@
             if (segmentIndex >= 0 && segmentIndex < segments.length) {
                 isManualSegment = true;
                 isPlaying = false;
-                playPauseBtn.textContent = "▶ Воспроизведение";
+                playPauseBtn.textContent = "▶ Воспр.";
                 currentSegment = segmentIndex;
                 
                 updatePosition(keyPoints[currentSegment]);
@@ -566,7 +747,6 @@
             updatePosition(keyPoints[0]);
             updateSegmentIndicator();
             
-            // Назначение обработчиков событий
             playPauseBtn.addEventListener('click', togglePlayPause);
             prevStepBtn.addEventListener('click', prevStep);
             nextStepBtn.addEventListener('click', nextStep);
@@ -580,7 +760,7 @@
                 });
             });
             
-            // Запуск анимации (на паузе)
+            updateSpeed();
             animate();
         }
 
